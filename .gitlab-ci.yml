@@ -1,0 +1,28 @@
+# CI is advisory: jobs are allow_failure so a missing runner never blocks merges.
+# Run tests locally with: pytest -q
+stages:
+  - lint
+  - test
+
+default:
+  image: python:3.11-slim
+  before_script:
+    - pip install -q ruff pytest httpx fastapi "uvicorn[standard]" pydantic
+
+lint:
+  stage: lint
+  allow_failure: true
+  rules:
+    - if: '$CI_MERGE_REQUEST_IID'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - ruff check src tests
+
+test:
+  stage: test
+  allow_failure: true
+  rules:
+    - if: '$CI_MERGE_REQUEST_IID'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - pytest -q

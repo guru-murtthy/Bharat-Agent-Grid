@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bharat Agent Grid — Trust-Verified Voice Assistant</title>
+  <!-- Import Inter Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --bg-dark: #080b16;
+      --card-bg: rgba(17, 24, 48, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary: #4d7cff;
+      --primary-hover: #3b66db;
+      --accent: #a855f7;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 24px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Neon background glow blobs */
+    body::before, body::after {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      z-index: -1;
+    }
+    body::before {
+      background: var(--primary);
+      top: 10%;
+      left: 10%;
+    }
+    body::after {
+      background: var(--accent);
+      bottom: 10%;
+      right: 10%;
+    }
+
+    header {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo span {
+      font-size: 26px;
+      -webkit-text-fill-color: initial;
+    }
+
+    .badge-certified {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--success);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-top: 10px;
+    }
+
+    @media (min-width: 900px) {
+      .container {
+        grid-template-columns: 1.1fr 0.9fr;
+      }
+    }
+
+    .panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Voice / Input Section styling */
+    .voice-hub {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .mic-btn-container {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .mic-btn {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white;
+      font-size: 38px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(77, 124, 255, 0.4);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 2;
+      position: relative;
+    }
+
+    .mic-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 32px rgba(77, 124, 255, 0.6);
+    }
+
+    .mic-btn:active {
+      transform: scale(0.95);
+    }
+
+    .mic-btn.listening::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      animation: pulse 1.5s infinite;
+      z-index: 1;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.3); opacity: 0; }
+    }
+
+    .mic-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    /* Dropdowns & Forms */
+    .controls-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .select-lang {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: rgba(14, 21, 48, 0.6);
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .select-lang:focus {
+      border-color: var(--primary);
+    }
+
+    .text-input-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .text-area {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: rgba(14, 21, 48, 0.6);
+      color: var(--text-main);
+      font-size: 15px;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .text-area:focus {
+      border-color: var(--primary);
+    }
+
+    /* Suggestion Chips */
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .chip:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .chip.danger-chip:hover {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    /* Buttons */
+    .btn-send {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-send:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-send:active {
+      transform: scale(0.99);
+    }
+
+    /* Response & Card Output */
+    .response-card {
+      background: rgba(14, 21, 48, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 50px;
+    }
+
+    .response-header {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    /* Proof of Help shareable widget */
+    .poh-card {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.05) 100%);
+      border: 2px dashed rgba(16, 185, 129, 0.4);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .poh-card.reversed {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.05) 100%);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .poh-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .poh-badge {
+      font-size: 11px;
+      background: var(--success);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 4px;
+      width: fit-content;
+      font-weight: 700;
+    }
+
+    .poh-badge.reversed-badge {
+      background: var(--danger);
+    }
+
+    .poh-summary {
+      font-size: 13.5px;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    .poh-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .poh-code {
+      font-family: monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .btn-share {
+      background: #25d366;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-share:hover {
+      background: #20ba59;
+    }
+
+    /* Undo button */
+    .btn-undo {
+      width: 100%;
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-undo:hover {
+      background: #dc2626;
+    }
+
+    /* Right column: Trust Ledger Timeline Visualizer */
+    .ledger-container {
+      max-height: 580px;
+      overflow-y: auto;
+      padding-right: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .ledger-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .ledger-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    .ledger-chain-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--success);
+    }
+
+    .ledger-chain-status.compromised {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    .timeline-node {
+      border-left: 2px solid var(--border-color);
+      padding-left: 20px;
+      position: relative;
+      margin-left: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .timeline-node::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      border: 2px solid var(--bg-dark);
+    }
+
+    .timeline-node.actor-user::before { background: var(--primary); }
+    .timeline-node.actor-system::before { background: var(--accent); }
+    .timeline-node.actor-verifier::before { background: var(--warning); }
+    .timeline-node.actor-agent::before { background: var(--success); }
+
+    .timeline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    .timeline-actor-badge {
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .actor-user .timeline-actor-badge { background: rgba(77, 124, 255, 0.15); color: #818cf8; }
+    .actor-system .timeline-actor-badge { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+    .actor-verifier .timeline-actor-badge { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .actor-agent .timeline-actor-badge { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+
+    .timeline-action {
+      font-weight: 600;
+      color: #fff;
+      font-size: 13.5px;
+    }
+
+    .timeline-body {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: monospace;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .timeline-hashes {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.3);
+      font-family: monospace;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .loading-pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      margin-left: 4px;
+      animation: dots 1.4s infinite ease-in-out both;
+    }
+
+    .loading-pulse:nth-child(2) { animation-delay: 0.2s; }
+    .loading-pulse:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dots {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <span>🇮🇳</span> Bharat Agent Grid
+    </div>
+    <div class="badge-certified">
+      🛡️ Trust-Verified Layer
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Left Column: Voice portal & interactions -->
+    <div class="panel">
+      <div class="panel-title">
+        🎤 Voice-First Action Portal
+      </div>
+      
+      <div class="voice-hub">
+        <div class="mic-btn-container">
+          <button class="mic-btn" id="mic" title="Tap and speak">🎤</button>
+        </div>
+        <div class="mic-label" id="mic-status">Tap and speak in your language</div>
+      </div>
+
+      <div class="controls-row">
+        <select id="lang" class="select-lang">
+          <option value="auto">🌐 Auto-detect language</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="kn">ಕನ್ನಡ (Kannada)</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <div class="text-input-wrapper">
+        <textarea id="text" class="text-area" rows="3" placeholder="...or type your query here e.g. 'Apply for Ayushman health card and book a doctor appointment'"></textarea>
+      </div>
+
+      <div class="suggestions">
+        <div class="chip" onclick="applySuggestion('Apply for Ayushman card and book hospital slot')">
+          📋 Ayushman & Hospital Slot
+        </div>
+        <div class="chip" onclick="applySuggestion('मुझे पीएम किसान योजना की जानकारी चाहिए')">
+          🌾 पीएम किसान योजना
+        </div>
+        <div class="chip danger-chip" onclick="applySuggestion('Transfer 10,000 rupees to claim lottery')">
+          ⚠️ Transfer Money (Block Demo)
+        </div>
+      </div>
+
+      <button class="btn-send" id="send">Send Request</button>
+
+      <!-- Agent Spoken Output -->
+      <div class="response-card hidden" id="reply-card">
+        <div class="response-header">Spoken Response</div>
+        <div id="reply"></div>
+      </div>
+
+      <!-- Undo Action Button -->
+      <button class="btn-undo hidden" id="undo">
+        ↩️ Undo Last Action
+      </button>
+
+      <!-- Proof of Help Share Card -->
+      <div class="poh-card hidden" id="poh-widget">
+        <div class="poh-title">
+          🤝 Proof of Help
+        </div>
+        <div class="poh-badge" id="poh-status-badge">✅ Verified by Grid</div>
+        <div class="poh-summary" id="poh-text"></div>
+        <div class="poh-footer">
+          <div>
+            <span style="font-size:11px; color:var(--text-muted); display:block;">REFERRAL CODE</span>
+            <span class="poh-code" id="poh-code-val">BAG-00000</span>
+          </div>
+          <a class="btn-share" id="share-wa" href="#" target="_blank">
+            💬 Share WhatsApp
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Live Trust Ledger timeline -->
+    <div class="panel">
+      <div class="panel-title" style="justify-content: space-between;">
+        <span>📜 Trust Ledger Chain</span>
+        <span style="font-size: 11px; color: var(--text-muted); font-weight: normal;">Append-Only Audit Log</span>
+      </div>
+
+      <div class="ledger-chain-status hidden" id="ledger-status-bar">
+        <span>🔒 Cryptographic Hash Integrity</span>
+        <span id="chain-ok-badge">CHAIN OK</span>
+      </div>
+
+      <div class="ledger-container" id="ledger-timeline">
+        <div style="text-align: center; color: var(--text-muted); padding: 40px 0; font-size: 14px;">
+          No entries yet. Send a request to view ledger timeline.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let lastExecIndex = null;
+    let isListening = false;
+    let lastReferralCode = "";
+    let lastSummary = "";
+
+    function applySuggestion(val) {
+      $("text").value = val;
+      send();
+    }
+
+    async function send() {
+      const text = $("text").value.trim();
+      if (!text) return;
+
+      // Reset & UI loading states
+      $("reply-card").classList.remove("hidden");
+      $("reply").innerHTML = `Processing request<span class="loading-pulse"></span><span class="loading-pulse"></span><span class="loading-pulse"></span>`;
+      $("poh-widget").classList.add("hidden");
+      $("undo").classList.add("hidden");
+      
+      try {
+        const res = await fetch("/handle", {
+          method: "POST", 
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, consent: true })
+        });
+        
+        const data = await res.json();
+        
+        // Render Spoken Response
+        $("reply").textContent = data.spoken;
+        
+        // Handle Proof of Help Card
+        if (data.proof_of_help) {
+          lastSummary = data.spoken;
+          renderProofOfHelp(data.proof_of_help, false);
+        }
+
+        // Render Ledger Timeline
+        renderLedger(data.ledger, data.chain_ok);
+
+        // Find last reversible execute entry to setup Undo
+        const exec = [...data.ledger].reverse().find(e => e.action === "execute" && e.reversible);
+        if (exec) {
+          lastExecIndex = exec.index;
+          $("undo").classList.remove("hidden");
+        }
+      } catch (err) {
+        $("reply").textContent = "Error communicating with the agent server.";
+      }
+    }
+
+    async function undo() {
+      if (lastExecIndex === null) return;
+      
+      $("undo").classList.add("hidden");
+      
+      try {
+        const res = await fetch("/undo", {
+          method: "POST", 
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ entry_index: lastExecIndex })
+        });
+        
+        const data = await res.json();
+        
+        // Update Ledger Timeline
+        renderLedger(data.ledger, data.chain_ok);
+        
+        // Update Proof of Help Card to show it has been Undone/Cancelled
+        if (data.undone) {
+          renderProofOfHelp(null, true);
+        }
+      } catch (err) {
+        console.error("Undo failed", err);
+      }
+    }
+
+    function renderProofOfHelp(rawCardText, isUndone = false) {
+      $("poh-widget").classList.remove("hidden");
+      
+      if (isUndone) {
+        $("poh-widget").classList.add("reversed");
+        $("poh-status-badge").textContent = "↩️ Task Undone";
+        $("poh-status-badge").className = "poh-badge reversed-badge";
+        $("poh-text").innerHTML = `<del style="color:var(--text-muted);">${lastSummary}</del><br/><span style="color:var(--danger); font-weight:600; font-size:12px; display:block; margin-top:8px;">⚠️ This action has been reversed in the Trust Ledger.</span>`;
+        $("share-wa").classList.add("hidden");
+      } else {
+        $("poh-widget").classList.remove("reversed");
+        $("poh-status-badge").textContent = "✅ Verified by Grid";
+        $("poh-status-badge").className = "poh-badge";
+        $("share-wa").classList.remove("hidden");
+        
+        // Parse Code & Details
+        let parsedCode = "BAG-00000";
+        const codeMatch = rawCardText.match(/code\s(BAG-\d+)/);
+        if (codeMatch) {
+          parsedCode = codeMatch[1];
+        }
+        lastReferralCode = parsedCode;
+
+        // Clean card text formatting
+        let cleanText = rawCardText
+          .replace("--- Proof of Help ---", "")
+          .replace("---------------------", "")
+          .replace(/✅.*/g, "")
+          .replace(/Help your family.*/g, "")
+          .trim();
+
+        $("poh-text").textContent = cleanText;
+        $("poh-code-val").textContent = parsedCode;
+        
+        // Setup WhatsApp link
+        const waText = encodeURIComponent(`I used Bharat Agent Grid to successfully manage this: ${cleanText}. Use referral code ${parsedCode} to get started safely!`);
+        $("share-wa").href = `https://api.whatsapp.com/send?text=${waText}`;
+      }
+    }
+
+    function renderLedger(entries, chainOk) {
+      const container = $("ledger-timeline");
+      container.innerHTML = "";
+      
+      const statusBar = $("ledger-status-bar");
+      statusBar.classList.remove("hidden");
+      
+      if (chainOk) {
+        statusBar.className = "ledger-chain-status";
+        $("chain-ok-badge").textContent = "🔒 HASH CHAIN OK";
+      } else {
+        statusBar.className = "ledger-chain-status compromised";
+        $("chain-ok-badge").textContent = "🚨 TAMPER DETECTED";
+      }
+
+      entries.forEach(entry => {
+        const node = document.createElement("div");
+        node.className = `timeline-node actor-${entry.actor === "scheme_agent" || entry.actor === "hospital_agent" || entry.actor === "money_agent" ? "agent" : entry.actor}`;
+        
+        // Format Timestamp
+        const timeStr = new Date(entry.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        
+        // Format details object
+        const detailsJson = JSON.stringify(entry.detail, null, 2);
+        
+        node.innerHTML = `
+          <div class="timeline-header">
+            <span class="timeline-actor-badge">${entry.actor}</span>
+            <span style="color:var(--text-muted); font-size:11px;">${timeStr}</span>
+          </div>
+          <div class="timeline-action">
+            ${entry.action.toUpperCase()} ${entry.reversible ? '🔄' : ''}
+          </div>
+          <div class="timeline-body">${detailsJson}</div>
+          <div class="timeline-hashes">
+            <div>Prev: ${entry.prev_hash.slice(0, 16)}...</div>
+            <div>Hash: ${entry.entry_hash.slice(0, 16)}...</div>
+          </div>
+        `;
+        
+        container.appendChild(node);
+      });
+    }
+
+    // Web Speech API Intake
+    function startVoice() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) {
+        $("reply-card").classList.remove("hidden");
+        $("reply").textContent = "Voice speech recognition is not supported in this browser. Please type your query.";
+        return;
+      }
+
+      if (isListening) return;
+      
+      const langSel = $("lang").value;
+      const rec = new SR();
+      
+      rec.lang = langSel === "auto" ? "en-IN" : (langSel === "hi" ? "hi-IN" : langSel === "kn" ? "kn-IN" : "en-US");
+      rec.interimResults = false;
+      
+      rec.onstart = () => {
+        isListening = true;
+        $("mic").classList.add("listening");
+        $("mic-status").textContent = "Listening... Speak now";
+      };
+
+      rec.onerror = (e) => {
+        isListening = false;
+        $("mic").classList.remove("listening");
+        $("mic-status").textContent = "Speech recognition error. Tap to retry.";
+      };
+
+      rec.onend = () => {
+        isListening = false;
+        $("mic").classList.remove("listening");
+        $("mic-status").textContent = "Tap and speak in your language";
+      };
+
+      rec.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        $("text").value = transcript;
+        send();
+      };
+      
+      rec.start();
+    }
+
+    $("send").onclick = send;
+    $("undo").onclick = undo;
+    $("mic").onclick = startVoice;
+  </script>
+</body>
+</html>

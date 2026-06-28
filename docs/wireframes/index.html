@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bharat Agent Grid — Wireframes</title>
+<style>
+  :root { font-family: system-ui, sans-serif; }
+  body { margin:0; background:#eef1f8; color:#1a2238; padding:24px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  p.sub { margin:0 0 24px; color:#5a6488; font-size:13px; }
+  .grid { display:flex; flex-wrap:wrap; gap:20px; }
+  .phone { width:260px; background:#0b1020; border-radius:26px; padding:16px;
+           box-shadow:0 10px 30px rgba(0,0,0,.18); color:#eef; }
+  .screen-title { font-size:12px; color:#9fb0d8; text-align:center; margin:0 0 10px; }
+  .mic { width:90px; height:90px; border-radius:50%; background:#3a6df0; color:#fff;
+         font-size:34px; display:flex; align-items:center; justify-content:center;
+         margin:14px auto; }
+  .bar { background:#141b34; border-radius:10px; padding:10px 12px; font-size:12px;
+         margin:8px 0; }
+  .pill { display:inline-block; background:#1f2a4d; border-radius:999px;
+          padding:4px 10px; font-size:11px; margin:2px; }
+  .ok { color:#5ad08a; } .warn { color:#f0c14b; } .block { color:#f08a8a; }
+  .btn { background:#3a6df0; color:#fff; border-radius:8px; padding:8px; text-align:center;
+         font-size:12px; margin-top:8px; }
+  .btn.alt { background:#b03a4e; }
+  .label { font-size:10px; color:#5a6488; text-transform:uppercase; letter-spacing:.5px;
+           margin-top:6px; text-align:center; }
+  @media print { body { background:#fff; } .phone { box-shadow:none; } }
+</style>
+</head>
+<body>
+  <h1>🇮🇳 Bharat Agent Grid — UI Wireframes</h1>
+  <p class="sub">Voice-first, low-literacy, consent-gated, reversible. Export these to PNG/PDF for the pitch deck.</p>
+  <div class="grid">
+
+    <div>
+      <div class="phone">
+        <p class="screen-title">1 · Home (one mic button)</p>
+        <div class="mic">🎤</div>
+        <div class="bar">Tap and speak in your language</div>
+        <span class="pill">हिन्दी</span><span class="pill">ಕನ್ನಡ</span><span class="pill">English</span>
+      </div>
+      <div class="label">Screen 1: Speak</div>
+    </div>
+
+    <div>
+      <div class="phone">
+        <p class="screen-title">2 · Understanding</p>
+        <div class="bar">“Apply for Ayushman card and book a hospital slot”</div>
+        <div class="bar">Plan:
+          <br/>• check eligibility
+          <br/>• submit application
+          <br/>• book OPD slot</div>
+        <div class="bar ok">✓ Sources found (pmjay.gov.in)</div>
+      </div>
+      <div class="label">Screen 2: Plan + grounding</div>
+    </div>
+
+    <div>
+      <div class="phone">
+        <p class="screen-title">3 · Verifier + consent</p>
+        <div class="bar ok">Verifier: APPROVED · grounded &amp; reversible</div>
+        <div class="bar">Do you approve?
+          <br/><b>Submit Ayushman application</b></div>
+        <div class="btn">✓ Yes, proceed (spoken)</div>
+        <div class="btn alt">✗ No</div>
+      </div>
+      <div class="label">Screen 3: Consent gate</div>
+    </div>
+
+    <div>
+      <div class="phone">
+        <p class="screen-title">4 · Done + undo</p>
+        <div class="bar ok">✓ Application submitted</div>
+        <div class="bar ok">✓ OPD slot booked (tomorrow)</div>
+        <div class="btn alt">Undo last action</div>
+        <div class="bar">Trust Ledger: 9 entries · chain OK</div>
+      </div>
+      <div class="label">Screen 4: Result + reversibility</div>
+    </div>
+
+    <div>
+      <div class="phone">
+        <p class="screen-title">5 · Blocked (anti-hallucination)</p>
+        <div class="bar block">✗ Verifier: BLOCKED</div>
+        <div class="bar">No trusted source for this claim.
+          I will not act without proof.</div>
+        <div class="btn">Try a verified option</div>
+      </div>
+      <div class="label">Screen 5: Safety demo</div>
+    </div>
+
+    <div>
+      <div class="phone">
+        <p class="screen-title">6 · Proof-of-Help (growth)</p>
+        <div class="bar ok">✅ Verified by Bharat Agent Grid</div>
+        <div class="bar">You helped: Ayushman + hospital slot</div>
+        <div class="bar">Help your family too:
+          <br/><b>code BAG-04217</b></div>
+        <div class="btn">Share on WhatsApp</div>
+      </div>
+      <div class="label">Screen 6: Viral loop</div>
+    </div>
+
+  </div>
+</body>
+</html>
