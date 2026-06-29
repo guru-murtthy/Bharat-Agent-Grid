@@ -713,11 +713,29 @@
         const data = await res.json();
         
         // Render Spoken Response
-        $("reply").textContent = data.spoken;
+        let cleanSpokenText = data.spoken;
+        if (cleanSpokenText.startsWith("[speak:")) {
+          cleanSpokenText = cleanSpokenText.replace(/^\[speak:[^\]]+\]\s*/, "");
+        }
+        $("reply").textContent = cleanSpokenText;
+        
+        // Speak response aloud using native browser TTS
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(cleanSpokenText);
+          if (data.language === "hi") {
+            utterance.lang = "hi-IN";
+          } else if (data.language === "kn") {
+            utterance.lang = "kn-IN";
+          } else {
+            utterance.lang = "en-IN";
+          }
+          window.speechSynthesis.speak(utterance);
+        }
         
         // Handle Proof of Help Card
         if (data.proof_of_help) {
-          lastSummary = data.spoken;
+          lastSummary = cleanSpokenText;
           renderProofOfHelp(data.proof_of_help, false);
         }
 

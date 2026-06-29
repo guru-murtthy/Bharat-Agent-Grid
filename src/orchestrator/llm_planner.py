@@ -13,7 +13,8 @@ from src.orchestrator.planner import plan as keyword_plan
 
 _SYSTEM = (
     "You convert a citizen request into a JSON list of tasks. "
-    "Each task: {\"intent\": one of [check_scheme, apply_scheme, find_slot, book_slot], "
+    "Each task: {\"intent\": one of [check_scheme, apply_scheme, find_slot, book_slot, transfer_money], "
+    "\"agent_name\": one of [scheme_agent, hospital_agent, money_agent], "
     "\"params\": object}. Return ONLY JSON."
 )
 
@@ -36,7 +37,12 @@ def plan(utterance: str, language: str = "en") -> list[AgentTask]:
         raw = resp.choices[0].message.content or "[]"
         data = json.loads(raw)
         tasks = [
-            AgentTask(intent=t["intent"], params=t.get("params", {}), language=language)
+            AgentTask(
+                intent=t["intent"],
+                agent_name=t.get("agent_name", ""),
+                params=t.get("params", {}),
+                language=language
+            )
             for t in data
             if t.get("intent")
         ]

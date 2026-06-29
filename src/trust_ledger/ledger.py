@@ -15,6 +15,17 @@ from typing import Any, Callable
 GENESIS_HASH = "0" * 64
 
 
+def sanitize_payload(obj: Any) -> Any:
+    """Recursively convert non-standard types to basic JSON-serializable types."""
+    if isinstance(obj, (str, int, float, bool)) or obj is None:
+        return obj
+    if isinstance(obj, dict):
+        return {str(k): sanitize_payload(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple, set)):
+        return [sanitize_payload(x) for x in obj]
+    return str(obj)
+
+
 @dataclass
 class LedgerEntry:
     index: int
@@ -33,7 +44,7 @@ class LedgerEntry:
             "timestamp": self.timestamp,
             "actor": self.actor,
             "action": self.action,
-            "detail": self.detail,
+            "detail": sanitize_payload(self.detail),
             "consent": self.consent,
             "reversible": self.reversible,
             "prev_hash": self.prev_hash,

@@ -26,6 +26,7 @@ class Citation:
 class AgentTask:
     """A single unit of work routed to a domain agent."""
     intent: str
+    agent_name: str = ""
     params: dict[str, Any] = field(default_factory=dict)
     language: str = "en"
 

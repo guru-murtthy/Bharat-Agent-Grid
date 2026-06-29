@@ -5,7 +5,8 @@ becomes retrieval over government/health/financial source-of-truth APIs.
 """
 from __future__ import annotations
 
-from src.contracts import Citation
+from src.agents.base import Agent
+from src.contracts import Citation, AgentResult, AgentTask
 
 _VERIFIED_SOURCES: dict[str, Citation] = {
     "pmkisan": Citation(
@@ -35,3 +36,24 @@ _VERIFIED_SOURCES: dict[str, Citation] = {
 def ground(source_id: str) -> Citation | None:
     """Return a verified citation for a source id, or None if unknown."""
     return _VERIFIED_SOURCES.get(source_id)
+
+
+class GroundingAgent(Agent):
+    name = "grounding_agent"
+    domain = "grounding"
+
+    def can_handle(self, task: AgentTask) -> bool:
+        return task.intent == "ground_claim"
+
+    def run(self, task: AgentTask) -> AgentResult:
+        claim = task.params.get("claim", "")
+        citation = ground(claim)
+        if citation:
+            return AgentResult(
+                answer=f"Claim '{claim}' grounded in trusted source: {citation.title}.",
+                citations=[citation]
+            )
+        return AgentResult(
+            answer=f"Claim '{claim}' could not be grounded in any trusted sources.",
+            citations=[]
+        )

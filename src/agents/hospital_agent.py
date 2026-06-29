@@ -10,12 +10,15 @@ class HospitalAgent(Agent):
     name = "hospital_agent"
     domain = "hospital"
 
+    def __init__(self) -> None:
+        self.booked_slots: list[dict] = []
+
     def can_handle(self, task: AgentTask) -> bool:
         return task.intent in {"find_slot", "book_slot"}
 
     def run(self, task: AgentTask) -> AgentResult:
         citation = ground("hospital_slots")
-        dept = task.params.get("department", "general medicine")
+        dept = task.params.get("department", "General Medicine")
         date = task.params.get("date", "tomorrow")
         answer = f"A {dept} OPD slot is available for {date}."
         action = None
@@ -32,3 +35,10 @@ class HospitalAgent(Agent):
             citations=[citation] if citation else [],
             proposed_action=action,
         )
+
+    def execute(self, payload: dict) -> None:
+        self.booked_slots.append(payload)
+
+    def undo(self, payload: dict) -> None:
+        if payload in self.booked_slots:
+            self.booked_slots.remove(payload)
